@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { logger } from '../logger.js';
 import { retry } from '../utils.js';
 import Database from 'better-sqlite3';
@@ -26,6 +28,12 @@ const connect = async (
 		throw new Error(
 			'Cannot create database. Please provide the DB location'
 		);
+	}
+
+	// create dir paths to db location
+	const locationDir = path.dirname(location);
+	if (!fs.existsSync(locationDir)) {
+		fs.mkdirSync(locationDir, { recursive: true });
 	}
 
 	// If the last connection to a db crashed, then the first new connection to open the database will start a recovery process.
