@@ -4,8 +4,8 @@
 	"description": "core repository for minimal stack SPAs",
 	"type": "module",
 	"scripts": {
-		"start-local": "FORKS=1 NODE_ENV=development PORT=3001 DB_LOCATION=./data/$npm_package_name.db node --watch ./core/server.js | npx pino-pretty -S",
-		"start": "node ./app/server.js | npx pino-pretty -S",
+		"start-local": "FORKS=1 NODE_ENV=development PORT=3000 DB_LOCATION=./data/$npm_package_name.db node --watch ./core/server.js | npx pino-pretty -S",
+		"start": "node ./core/server.js | npx pino-pretty -S",
 		"test": "NODE_ENV=development DB_LOCATION=:memory: echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {
