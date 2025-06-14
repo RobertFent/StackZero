@@ -1,0 +1,5 @@
+# dotfiles and folders
+.env
+.venv
+.ansible
+.vscode

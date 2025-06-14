@@ -1,0 +1,212 @@
+- name: Update home server
+  hosts: homeserver
+  become: true
+  become_user: robot
+  tasks:
+    # https://www.cyberciti.biz/faq/ansible-apt-update-all-packages-on-ubuntu-debian-linux/
+    - name: Update package list
+      become: true
+      become_user: root
+      ansible.builtin.apt:
+        update_cache: true
+        force_apt_get: true
+        cache_valid_time: 3600
+
+    - name: Upgrade all packages
+      ansible.builtin.apt:
+        state: latest
+        force_apt_get: true
+
+    - name: Check if reboot is needed for Ubuntu server
+      register: reboot_required_file
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+
+    - name: Reboot the Ubuntu server in case it is needed
+      ansible.builtin.reboot:
+        msg: "Reboot initiated by Ansible due to kernel updates"
+        connect_timeout: 5
+        reboot_timeout: 300
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: uptime
+      when: reboot_required_file.stat.exists
+
+    # todo: github pat to secrets before pushing
+    # get all git repos
+    - name: Install Git
+      become: true
+      become_user: root
+      ansible.builtin.apt:
+        name: git
+        force_apt_get: true
+        state: latest
+
+    - name: Clone dotfiles Git Repository
+      ansible.builtin.git:
+        repo: https://{{ github_token }}@github.com/RobertFent/dotfiles.git
+        dest: "{{ ansible_user_dir }}/repos/dotfiles"
+        version: master
+        clone: true
+        force: true
+
+    - name: Clone home-server Git Repository
+      ansible.builtin.git:
+        repo: https://{{ github_token }}@github.com/RobertFent/home-server.git
+        dest: "{{ ansible_user_dir }}/repos/home-server"
+        version: master
+        clone: true
+        force: true
+
+    # start shell setup
+    - name: Install ZSH
+      become: true
+      become_user: root
+      ansible.builtin.apt:
+        name: zsh
+        force_apt_get: true
+        state: latest
+
+    - name: Install neofetch
+      become: true
+      become_user: root
+      ansible.builtin.apt:
+        name: neofetch
+        force_apt_get: true
+        state: latest
+
+    - name: Ensure default shell is zsh for user 'robot'
+      become: true
+      become_user: root
+      ansible.builtin.user:
+        name: robot
+        shell: /usr/bin/zsh
+
+    - name: Install oh-my-zsh for user 'robot'
+      ansible.builtin.git:
+        repo: https://github.com/ohmyzsh/ohmyzsh.git
+        dest: "{{ ansible_user_dir }}/.oh-my-zsh"
+        version: master
+
+    # get oh-my-zsh plugins
+    - name: Clone auto suggestions Git Repository
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-autosuggestions
+        dest: "{{ ansible_user_dir }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+        version: master
+        clone: true
+        force: true
+
+    - name: Clone syntax highlighting Git Repository
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+        dest: "{{ ansible_user_dir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+        version: master
+        clone: true
+        force: true
+
+    - name: Clone completions Git Repository
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-completions
+        dest: "{{ ansible_user_dir }}/.oh-my-zsh/custom/plugins/zsh-completions"
+        version: master
+        clone: true
+        force: true
+
+    - name: Clone p10k Git Repository
+      ansible.builtin.git:
+        repo: https://github.com/romkatv/powerlevel10k.git
+        dest: "{{ ansible_user_dir }}/.oh-my-zsh/custom/themes/powerlevel10k"
+        version: master
+        clone: true
+        force: true
+        depth: 1
+
+    - name: Replace .zshrc with .zshrc from dotfile repo
+      block:
+        - name: Ensure .zshrcServer exists
+          ansible.builtin.stat:
+            path: "{{ ansible_user_dir }}/repos/dotfiles/zsh/.zshrcServer"
+          register: zshrc_server
+
+        - name: Fail if source file doesn't exist
+          ansible.builtin.fail:
+            msg: "ERROR: Source .zshrc file not found at {{ ansible_user_dir }}/repos/dotfiles/zsh/.zshrcServer"
+          when: not zshrc_server.stat.exists
+
+        - name: Replace .zshrc
+          ansible.builtin.copy:
+            src: "{{ ansible_user_dir }}/repos/dotfiles/zsh/.zshrcServer"
+            dest: "{{ ansible_user_dir }}/.zshrc"
+            remote_src: true
+            force: true
+            mode: "0666"
+          when: zshrc_server.stat.exists
+
+        - name: Remove .zshrcServer
+          ansible.builtin.file:
+            path: "{{ ansible_user_dir }}/.zshrcServer"
+            state: absent
+          when: zshrc_server.stat.exists
+
+    - name: Replace .p10k.zsh with .p10k.zsh from dotfile repo
+      block:
+        - name: Ensure .zshrcServer exists
+          ansible.builtin.stat:
+            path: "{{ ansible_user_dir }}/repos/dotfiles/zsh/.p10k.zsh"
+          register: p10k
+
+        - name: Fail if source file doesn't exist
+          ansible.builtin.fail:
+            msg: "ERROR: Source .p10k.zsh file not found at {{ ansible_user_dir }}/repos/dotfiles/zsh/.p10k.zsh"
+          when: not p10k.stat.exists
+
+        - name: Replace .zshrc
+          ansible.builtin.copy:
+            src: "{{ ansible_user_dir }}/repos/dotfiles/zsh/.p10k.zsh"
+            dest: "{{ ansible_user_dir }}/.p10k.zsh"
+            remote_src: true
+            force: true
+            mode: "0666"
+          when: p10k.stat.exists
+
+    - name: Ensure /etc/apt/keyrings directory exists
+      become: true
+      become_user: root
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Download Docker GPG key to keyring
+      become: true
+      become_user: root
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: "0644"
+        force: true
+
+    - name: Add Docker repository
+      become: true
+      become_user: root
+      ansible.builtin.apt_repository:
+        repo: >-
+          deb [arch={{ ansible_architecture | lower }} signed-by=/etc/apt/keyrings/docker.asc]
+          https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
+        filename: docker
+        state: present
+
+    - name: Update apt cache after adding Docker repo
+      become: true
+      become_user: root
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install Docker (Ubuntu default)
+      become: true
+      become_user: root
+      ansible.builtin.apt:
+        name: docker.io
+        state: latest
+        force_apt_get: true

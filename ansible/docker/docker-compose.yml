@@ -1,0 +1,7 @@
+services:
+  ubuntu-ssh-server:
+    container_name: ubuntu-ssh-server
+    build: .
+    ports:
+      - "2222:22"
+    restart: unless-stopped
