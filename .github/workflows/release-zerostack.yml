@@ -34,10 +34,16 @@ jobs:
           IMAGE_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           echo "image=$IMAGE_NAME" >> $GITHUB_OUTPUT
 
-      - name: Build Docker image
-        run: |
-          docker build -f docker/Dockerfile -t ghcr.io/${{ steps.meta.outputs.image }}:latest .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
 
-      - name: Push Docker image
-        run: |
-          docker push ghcr.io/${{ steps.meta.outputs.image }}:latest
+      - name: Build and push Docker image (multi-arch)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/${{ steps.meta.outputs.image }}:latest
