@@ -1,3 +1,5 @@
+![StackZero Frozen Icon](static/stackzero.png)
+
 ## todo
 
 - get NODE_ENV=production to work
