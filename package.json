@@ -6,7 +6,7 @@
 	"scripts": {
 		"start-local": "FORKS=1 NODE_ENV=development PORT=3000 DB_LOCATION=./data/$npm_package_name.db node --watch --watch-path=./app --watch-path=./core ./core/server.js | npx pino-pretty -S",
 		"start": "node ./core/server.js | npx pino-pretty -S",
-		"migrate": "node ./core/scripts/migrate.js",
+		"migrate": "node ./core/modules/database/migrate.js",
 		"test": "NODE_ENV=development DB_LOCATION=:memory: echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {
