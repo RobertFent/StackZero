@@ -1,3 +1,6 @@
 node_modules
 *.db*
-app
+# dev folders
+/app/
+/data/
+/static/

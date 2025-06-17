@@ -105,7 +105,7 @@ export class Migrations {
 	 * @param {*} [filesystem=fs]
 	 */
 	constructor(
-		directory = import.meta.dirname + '/migrations',
+		directory = process.cwd() + '/data/migrations',
 		filesystem = fs
 	) {
 		this.#fs = filesystem;

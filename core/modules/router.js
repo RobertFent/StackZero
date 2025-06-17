@@ -1,9 +1,7 @@
 import { readdir } from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const routesDir = path.resolve(__dirname, '../../app/routes');
+const ROUTES_DIR = `${process.cwd()}/app/routes`;
 
 /**
  * Loads routes asynchronously.
@@ -19,12 +17,12 @@ const routesDir = path.resolve(__dirname, '../../app/routes');
  * @returns {*}
  */
 export async function loadRoutes({ app, db }) {
-	const files = await readdir(routesDir);
+	const files = await readdir(ROUTES_DIR);
 
 	for (const file of files) {
 		if (!file.endsWith('.js')) continue;
 
-		const modulePath = path.join(routesDir, file);
+		const modulePath = path.join(ROUTES_DIR, file);
 		const routeModule = await import(modulePath);
 
 		if (typeof routeModule.init === 'function') {

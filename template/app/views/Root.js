@@ -1,4 +1,4 @@
-import { html } from '../../core/modules/html.js';
+import { html } from '../../../core/modules/html.js';
 
 export const Root = () => {
 	return html`

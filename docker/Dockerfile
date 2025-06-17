@@ -18,13 +18,9 @@ COPY package-lock.json .
 RUN npm install
 
 # copy rest of the app and prepare launch
-COPY app/ app/
-COPY static/ static/
-
-COPY app app
-COPY core core
-COPY static static
-COPY package.json .
-COPY package-lock.json .
+COPY core/ core
+COPY template/app app
+COPY template/data data
+COPY template/static static
 
 CMD [ "npm", "start" ]

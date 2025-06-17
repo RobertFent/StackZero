@@ -1,9 +1,8 @@
-// utils/loadCustomerModules.js
 import path from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { pathToFileURL } from 'url';
 import { logger } from './logger.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const APP_PATH = `${process.cwd()}/app`;
 
 /**
  * Load customer core modules asynchronously and handle any errors that occur during the process.
@@ -20,7 +19,7 @@ export const loadCustomerCoreModules = async () => {
 	let Alert, Layout;
 
 	try {
-		const alertPath = path.join(__dirname, '../../app/components/Alert.js');
+		const alertPath = path.join(APP_PATH, 'components/Alert.js');
 		const alertUrl = pathToFileURL(alertPath).href;
 		const alertModule = await import(alertUrl);
 		Alert = alertModule.Alert;
@@ -39,7 +38,7 @@ export const loadCustomerCoreModules = async () => {
 	}
 
 	try {
-		const layoutPath = path.join(__dirname, '../../app/views/Layout.js');
+		const layoutPath = path.join(APP_PATH, 'views/Layout.js');
 		const layoutUrl = pathToFileURL(layoutPath).href;
 
 		const layoutModule = await import(layoutUrl);
