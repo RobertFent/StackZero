@@ -1,6 +1,7 @@
 node_modules
 *.db*
 # dev folders
-/app/
-/data/
-/static/
+/app/*
+/data/*
+/static/*
+!/static/stackzero.png

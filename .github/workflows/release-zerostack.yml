@@ -1,10 +1,10 @@
 name: Publish Docker image to GHCR
 
-# todo: proper rules
 on:
   push:
     branches:
       - master
+      - develop
 
 jobs:
   publish:
@@ -25,11 +25,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract repo name
+      - name: Extract repo and tag name
         id: meta
         run: |
           IMAGE_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          
+          if [[ "${{ github.ref_name }}" == "master" ]]; then
+            TAG=production
+          elif [[ "${{ github.ref_name }}" == "develop" ]]; then
+            TAG=staging
+          fi
+
           echo "image=$IMAGE_NAME" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -43,4 +51,4 @@ jobs:
           file: docker/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/${{ steps.meta.outputs.image }}:latest
+          tags: ghcr.io/${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
