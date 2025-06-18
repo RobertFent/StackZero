@@ -7,7 +7,7 @@ import statics from '@fastify/static';
 import session from '@fastify/secure-session';
 import { Hasher } from './modules/hasher.js';
 import { loadRoutes } from './modules/router.js';
-import { loadCustomerCoreModules } from './modules/loadCustomerCoreModules.js';
+import { coreModuleLoader } from './modules/coreModuleLoader.js';
 
 export const startApp = async (options = { port: 8080 }) => {
 	let appVersion = 1; // bump the version up to force client refresh.
@@ -29,7 +29,7 @@ export const startApp = async (options = { port: 8080 }) => {
 	const db = await connect(process.env.DB_LOCATION);
 
 	// load core modules if given or their defaults if not
-	const { Alert, Layout } = await loadCustomerCoreModules();
+	const { Alert, Layout } = await coreModuleLoader();
 
 	// In dev mode, we run migrations upon startup.
 	// In production, migrations are run by the deployment script.
@@ -200,5 +200,5 @@ export const startApp = async (options = { port: 8080 }) => {
 	const url = await fastify.listen(options);
 	logger.info(`Running @ ${url}`);
 
-	return { url, bumpVersion, healthy };
+	return { url, bumpVersion, healthy, fastify };
 };

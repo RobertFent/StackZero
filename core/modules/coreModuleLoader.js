@@ -2,8 +2,6 @@ import path from 'path';
 import { pathToFileURL } from 'url';
 import { logger } from './logger.js';
 
-const APP_PATH = `${process.cwd()}/app`;
-
 /**
  * Load customer core modules asynchronously and handle any errors that occur during the process.
  * Layout.js and Alert.js are needed.
@@ -15,8 +13,10 @@ const APP_PATH = `${process.cwd()}/app`;
  * @async
  * @returns {unknown}
  */
-export const loadCustomerCoreModules = async () => {
+export const coreModuleLoader = async () => {
 	let Alert, Layout;
+
+	const APP_PATH = `${process.cwd()}/app`;
 
 	try {
 		const alertPath = path.join(APP_PATH, 'components/Alert.js');

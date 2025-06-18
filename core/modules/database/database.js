@@ -31,14 +31,15 @@ const connect = async (
 	}
 
 	// create dir paths to db location and check for proper prefix
+	const isInMemoryDb = location === ':memory:';
 	const locationDir = path.dirname(location);
-	if (!location.startsWith('./data/') || !location === ':memory:') {
+	if (!location.startsWith('./data/') && !isInMemoryDb) {
 		throw new Error(
 			'Cannot create database. DB location must either start with ./data or be in memory (:memory:)'
 		);
 	}
 
-	if (!fs.existsSync(locationDir)) {
+	if (!fs.existsSync(locationDir) && !isInMemoryDb) {
 		fs.mkdirSync(locationDir, { recursive: true });
 	}
 
