@@ -1,0 +1,31 @@
+#!/bin/sh
+
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+	against=HEAD
+else
+	# Initial commit: diff against an empty tree object
+	against=$(git hash-object -t tree /dev/null)
+fi
+
+# Get the commit message
+commit_message=$(cat "$1")
+
+# use by default -P for regex with grep (on linux the beghavior differs to mac)
+grep_flag="-P"
+
+# Check if BSD grep is used (macos grep does not work with -P but GNU grep somehow not correctly with -E; it does not recognize \d)
+is_bsd=$(grep -V | grep BSD)
+if [[ -n $is_bsd ]]; then
+  grep_flag="-E"
+fi
+
+# Check if the commit message starts with "feat(*):", "fix(*):", or "chore(*):"
+if ! echo "$commit_message" | grep $grep_flag '(^(feat|fix|chore)\(.+\):\s[A-Z].*\s-\s#\d+$)|(^Merge branch)' >/dev/null; then
+    echo "Error: Commit message must match following criteria:"
+	echo "- start with feat(.*):, fix(.*): or chore(.*):        - .* means any non-zero amount of characters should be in paranthesis"
+	echo "- afterwards the message should start with an upper letter"
+	echo "- the commit message should end with - #\d+           - \d+ means any non-zero number of digits"
+	echo "\nExample of working commit message: feat(git): Added pre-commit hook for checking commit message convention - #66"
+    exit 1
+fi

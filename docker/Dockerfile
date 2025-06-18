@@ -15,6 +15,7 @@ ENV TZ=Europe/Berlin
 # copy website deps and install them
 COPY package.json .
 COPY package-lock.json .
+ENV SKIP_POSTINSTALL=true
 RUN npm install
 
 # copy rest of the app and prepare launch

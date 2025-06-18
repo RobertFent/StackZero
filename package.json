@@ -9,7 +9,10 @@
 		"migrate": "node ./core/modules/database/migrate.js",
 		"test:unit-integration": "NODE_ENV=development DB_LOCATION=:memory: node --test --experimental-test-module-mocks --experimental-test-coverage --test-coverage-include='core/**/*.js' --test-coverage-lines=80",
 		"test:e2e": "npx playwright test",
-		"test": "NODE_ENV=development DB_LOCATION=:memory: conc --kill-others-on-fail 'npm run test:unit-integration' 'npm run test:e2e'"
+		"test": "NODE_ENV=development DB_LOCATION=:memory: conc --kill-others-on-fail 'npm run test:unit-integration' 'npm run test:e2e'",
+		"setup:git-hooks": "git config core.hooksPath .git-hooks",
+		"setup:git-merge-strategy": "git config pull.rebase false",
+		"postinstall": "if [ \"$SKIP_POSTINSTALL\" != \"true\" ]; then yarn setup:git-hooks && yarn setup:git-merge-strategy; fi"
 	},
 	"engines": {
 		"npm": ">=10.9.2",

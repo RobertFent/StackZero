@@ -2,6 +2,8 @@
 
 ## todo
 
+lets go
+
 - cicd (https://github.com/actions/create-release; test step when MR into develop or master)
 - release tags and tag docker compose in template
 - more documentation (here and in code including ansible setup, shields.io)
