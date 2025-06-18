@@ -41,7 +41,7 @@ describe('router', () => {
 
 		// load module with arg so that cache gets busted and tests can run without side effects
 		const { loadRoutes } = await import(
-			`../core/modules/router.js?ts=${Date.now()}`
+			`../../core/modules/router.js?ts=${Date.now()}`
 		);
 
 		const mockApp = {};
@@ -58,7 +58,7 @@ describe('router', () => {
 
 		// load module with arg so that cache gets busted and tests can run without side effects
 		const { loadRoutes } = await import(
-			`../core/modules/router.js?ts=${Date.now()}`
+			`../../core/modules/router.js?ts=${Date.now()}`
 		);
 
 		const app = {};
@@ -73,7 +73,7 @@ describe('router', () => {
 	it('handles empty routes directory', async () => {
 		// load module with arg so that cache gets busted and tests can run without side effects
 		const { loadRoutes } = await import(
-			`../core/modules/router.js?ts=${Date.now()}`
+			`../../core/modules/router.js?ts=${Date.now()}`
 		);
 
 		const app = {};

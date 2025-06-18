@@ -7,24 +7,14 @@
 		"start-local": "FORKS=1 NODE_ENV=development PORT=3000 DB_LOCATION=./data/$npm_package_name.db node --watch --watch-path=./app --watch-path=./core ./core/server.js | npx pino-pretty -S",
 		"start": "node ./core/server.js | npx pino-pretty -S",
 		"migrate": "node ./core/modules/database/migrate.js",
-		"test": "NODE_ENV=development DB_LOCATION=:memory: echo \"Error: no test specified\" && exit 1"
+		"test:unit-integration": "NODE_ENV=development DB_LOCATION=:memory: node --test --experimental-test-module-mocks --experimental-test-coverage --test-coverage-include='core/**/*.js' --test-coverage-lines=80",
+		"test:e2e": "npx playwright test",
+		"test": "NODE_ENV=development DB_LOCATION=:memory: conc --kill-others-on-fail 'npm run test:unit-integration' 'npm run test:e2e'"
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/RobertFent/StackZero.git"
+	"engines": {
+		"npm": ">=10.9.2",
+		"node": ">=22.15.0"
 	},
-	"keywords": [
-		"node.js",
-		"javascript",
-		"fastify",
-		"htmx"
-	],
-	"author": "robot",
-	"license": "ISC",
-	"bugs": {
-		"url": "https://github.com/RobertFent/StackZero/issues"
-	},
-	"homepage": "https://github.com/RobertFent/StackZero#readme",
 	"dependencies": {
 		"@fastify/formbody": "^8.0.2",
 		"@fastify/secure-session": "^8.2.0",
@@ -35,7 +25,10 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.28.0",
+		"@playwright/test": "^1.53.0",
+		"concurrently": "^9.1.2",
 		"eslint-config-prettier": "^10.1.5",
-		"eslint-plugin-prettier": "^5.4.1"
+		"eslint-plugin-prettier": "^5.4.1",
+		"memfs": "^4.17.2"
 	}
 }

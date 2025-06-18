@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { html } from '../core/modules/html.js';
+import { html } from '../../core/modules/html.js';
 
 const normalizeHtml = (str) => {
 	return str

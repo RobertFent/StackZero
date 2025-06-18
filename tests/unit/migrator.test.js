@@ -37,7 +37,7 @@ before(async () => {
 describe('migrator', () => {
 	beforeEach(async () => {
 		mock.reset();
-		mock.module('../core/modules/logger.js', {
+		mock.module('../../core/modules/logger.js', {
 			namedExports: {
 				logger: {
 					debug: (args) => {
@@ -53,7 +53,7 @@ describe('migrator', () => {
 			}
 		});
 		({ Migrator, Migrations } = await import(
-			'../core/modules/database/migrator.js'
+			'../../core/modules/database/migrator.js'
 		));
 	});
 	it('migrate() - applies a migration when out of date', () => {

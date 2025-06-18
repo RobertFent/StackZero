@@ -16,7 +16,7 @@ describe('coreModuleLoader', () => {
 	beforeEach(async () => {
 		// mock logger
 		mock.reset();
-		mock.module('../core/modules/logger.js', {
+		mock.module('../../core/modules/logger.js', {
 			namedExports: {
 				logger: {
 					warn: (args) => {
@@ -54,7 +54,7 @@ describe('coreModuleLoader', () => {
 
 		// load module with arg so that cache gets busted and tests can run without side effects
 		const { coreModuleLoader } = await import(
-			`../core/modules/coreModuleLoader.js?test=${Date.now()}`
+			`../../core/modules/coreModuleLoader.js?test=${Date.now()}`
 		);
 		const { Alert, Layout } = await coreModuleLoader();
 
@@ -74,7 +74,7 @@ describe('coreModuleLoader', () => {
 	it('falls back to default Alert and Layout when missing', async () => {
 		// load module with arg so that cache gets busted and tests can run without side effects
 		const { coreModuleLoader } = await import(
-			`../core/modules/coreModuleLoader.js?test=${Date.now()}`
+			`../../core/modules/coreModuleLoader.js?test=${Date.now()}`
 		);
 		const { Alert, Layout } = await coreModuleLoader();
 

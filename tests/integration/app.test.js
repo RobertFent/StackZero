@@ -1,6 +1,6 @@
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert';
-import { startApp } from '../core/app.js';
+import { startApp } from '../../core/app.js';
 
 describe('app', () => {
 	// todo: mock deps

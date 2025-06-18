@@ -36,7 +36,7 @@ describe('database', () => {
 
 		// dynamic import AFTER mock is applied
 		({ connect } = await import(
-			'../core/modules/database/database.js?ts=' + Date.now()
+			'../../core/modules/database/database.js?ts=' + Date.now()
 		));
 	});
 	it('applies all expected PRAGMAs', async () => {

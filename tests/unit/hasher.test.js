@@ -32,7 +32,7 @@ describe('hasher', () => {
 				}
 			}
 		});
-		const { Hasher } = await import('../core/modules/hasher.js');
+		const { Hasher } = await import('../../core/modules/hasher.js');
 		hasher = new Hasher({
 			root: '/static-files',
 			prefix: '/static/',
