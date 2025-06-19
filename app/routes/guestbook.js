@@ -1,5 +1,5 @@
 import { Error } from '../components/Error.js';
-import { sql } from '../../core/modules/database/database.js';
+import { sql } from '../../core/definitions.js';
 import { Guestbook } from '../views/Guestbook.js';
 import { randomUUID } from 'node:crypto';
 

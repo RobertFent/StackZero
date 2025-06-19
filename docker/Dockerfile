@@ -15,12 +15,17 @@ ENV TZ=Europe/Berlin
 # copy website deps and install them
 COPY package.json .
 COPY package-lock.json .
+ENV SKIP_POSTINSTALL=true
 RUN npm install
 
 # copy rest of the app and prepare launch
 COPY core/ core
-COPY template/app app
-COPY template/data data
-COPY template/static static
+COPY app/ app
+COPY data/ data
+COPY static/ static
+
+# bake app version into image
+ARG APP_VERSION
+ENV APP_VERSION=$APP_VERSION
 
 CMD [ "npm", "start" ]
