@@ -15,6 +15,11 @@ export const startApp = async (options = { port: 8080 }) => {
 	logger.info(`App Version: ${process.env.APP_VERSION}`);
 	let health = 404; // app is unhealthy until cluster signals otherwise.
 
+	// simulate test crash for integration test
+	if (process.env.TEST_CRASH === 'true') {
+		throw new Error('Simulated crash');
+	}
+
 	const isDevMode = process.env.NODE_ENV !== 'production';
 
 	if (!process.env.DB_LOCATION) {
