@@ -1,4 +1,4 @@
-import { html } from '../../core/modules/html.js';
+import { html } from '../../core/definitions.js';
 
 /**
  * Returns an HTML element displaying an error message, with the default error message as an empty string if no error is provided.

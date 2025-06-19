@@ -1,4 +1,4 @@
-import { html } from '../../core/modules/html.js';
+import { html } from '../../core/definitions.js';
 
 export const Layout = (Main) => {
 	return (params) => {

@@ -1,5 +1,5 @@
 import { Error } from '../components/Error.js';
-import { html } from '../../core/modules/html.js';
+import { html } from '../../core/definitions.js';
 
 export const Guestbook = ({ entries }) => {
 	return html`
