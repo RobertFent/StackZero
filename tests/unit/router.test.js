@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, afterEach } from 'node:test';
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import fs from 'fs/promises';
 import path from 'path';
 import { tmpdir } from 'os';
