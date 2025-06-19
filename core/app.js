@@ -10,7 +10,9 @@ import { loadRoutes } from './modules/router.js';
 import { coreModuleLoader } from './modules/coreModuleLoader.js';
 
 export const startApp = async (options = { port: 8080 }) => {
-	let appVersion = 1; // bump the version up to force client refresh.
+	let appVersion =
+		Number(process.env.APP_VERSION?.match(/\d+/g).join('')) || 1; // bump the version up to force client refresh.
+	logger.info(`App Version: ${process.env.APP_VERSION}`);
 	let health = 404; // app is unhealthy until cluster signals otherwise.
 
 	const isDevMode = process.env.NODE_ENV !== 'production';

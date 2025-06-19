@@ -19,9 +19,6 @@ ENV SKIP_POSTINSTALL=true
 RUN npm install
 
 # copy rest of the app and prepare launch
-COPY core/ core
-COPY template/app app
-COPY template/data data
-COPY template/static static
+COPY core/ app/ data/ static/ ./
 
 CMD [ "npm", "start" ]
