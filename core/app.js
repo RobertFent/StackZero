@@ -11,9 +11,18 @@ import { coreModuleLoader } from './modules/coreModuleLoader.js';
 import auth0 from '@auth0/auth0-fastify';
 import dotenv from 'dotenv';
 
+const ENVS = ['development', 'production', 'testing'];
+
 export const startApp = async (options = { port: 8080 }) => {
-	// load dotenv variables
-	dotenv.config();
+	logger.debug(`Environment: ${process.env.NODE_ENV}`);
+	const isDevMode = process.env.NODE_ENV === 'development';
+	const isTestMode = process.env.NODE_ENV === 'testing';
+	const isProductionMode = process.env.NODE_ENV === 'production';
+
+	// load dotenv variables if not in testing env
+	if (!isTestMode) {
+		dotenv.config();
+	}
 
 	let appVersion =
 		Number(process.env.APP_VERSION?.match(/\d+/g)?.join('')) || 1; // bump the version up to force client refresh.
@@ -29,14 +38,12 @@ export const startApp = async (options = { port: 8080 }) => {
 		throw new Error('DB_LOCATION environment variable is missing.');
 	}
 
-	const envs = ['development', 'production'];
-	if (!envs.includes(process.env.NODE_ENV)) {
+	if (!ENVS.includes(process.env.NODE_ENV)) {
 		throw new Error(
-			`NODE_ENV environment variable must be one of ${envs}.`
+			`NODE_ENV environment variable must be one of ${ENVS}.`
 		);
 	}
 
-	const isDevMode = process.env.NODE_ENV !== 'production';
 	const useAuth0 = process.env.AUTH0_ENABLED === 'true';
 
 	const db = await connect(process.env.DB_LOCATION);
@@ -46,7 +53,7 @@ export const startApp = async (options = { port: 8080 }) => {
 
 	// In dev mode, we run migrations upon startup.
 	// In production, migrations are run by the deployment script.
-	if (isDevMode) {
+	if (isDevMode || isTestMode) {
 		const migrator = new Migrator(db);
 		migrator.migrate();
 	}
@@ -84,7 +91,7 @@ export const startApp = async (options = { port: 8080 }) => {
 	const insecure =
 		'0000000000000000000000000000000000000000000000000000000000000000';
 	const sessionSecret = process.env.COOKIE_SECRET ?? insecure;
-	if (!isDevMode && sessionSecret === insecure) {
+	if (isProductionMode && sessionSecret === insecure) {
 		throw new Error('Cannot use insecure session secret in production');
 	}
 
