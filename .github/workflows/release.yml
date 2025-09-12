@@ -120,9 +120,9 @@ jobs:
           echo "tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
           if [[ "${DOCKER_TAG}" != *-staging ]]; then
-            echo "environment=production" >> $GITHUB_OUTPUT
+            echo "is_production=true" >> $GITHUB_OUTPUT
           else
-            echo "environment=staging" >> $GITHUB_OUTPUT
+            echo "is_production=false" >> $GITHUB_OUTPUT
           fi
   
       - name: Set up Docker Buildx
@@ -140,8 +140,7 @@ jobs:
           # push to :production and :staging and to :latest if production is built
           tags: |
             ghcr.io/${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
-            ghcr.io/${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.environment }}
-            ${{ steps.meta.outputs.environment == 'production' && format('ghcr.io/{0}:latest', steps.meta.outputs.image) || '' }}
+            ${{ steps.meta.outputs.is_production == 'true' && format('ghcr.io/{0}:latest', steps.meta.outputs.image) || '' }}
           build-args: |
             APP_VERSION=${{ steps.meta.outputs.tag }}
 
