@@ -8,8 +8,22 @@ import session from '@fastify/secure-session';
 import { Hasher } from './modules/hasher.js';
 import { loadRoutes } from './modules/router.js';
 import { coreModuleLoader } from './modules/coreModuleLoader.js';
+import auth0 from '@auth0/auth0-fastify';
+import dotenv from 'dotenv';
+
+const ENVS = ['development', 'production', 'testing'];
 
 export const startApp = async (options = { port: 8080 }) => {
+	logger.debug(`Environment: ${process.env.NODE_ENV}`);
+	const isDevMode = process.env.NODE_ENV === 'development';
+	const isTestMode = process.env.NODE_ENV === 'testing';
+	const isProductionMode = process.env.NODE_ENV === 'production';
+
+	// load dotenv variables if not in testing env
+	if (!isTestMode) {
+		dotenv.config();
+	}
+
 	let appVersion =
 		Number(process.env.APP_VERSION?.match(/\d+/g)?.join('')) || 1; // bump the version up to force client refresh.
 	logger.info(`App Version: ${process.env.APP_VERSION}`);
@@ -20,18 +34,17 @@ export const startApp = async (options = { port: 8080 }) => {
 		throw new Error('Simulated crash');
 	}
 
-	const isDevMode = process.env.NODE_ENV !== 'production';
-
 	if (!process.env.DB_LOCATION) {
 		throw new Error('DB_LOCATION environment variable is missing.');
 	}
 
-	const envs = ['development', 'production'];
-	if (!envs.includes(process.env.NODE_ENV)) {
+	if (!ENVS.includes(process.env.NODE_ENV)) {
 		throw new Error(
-			`NODE_ENV environment variable must be one of ${envs}.`
+			`NODE_ENV environment variable must be one of ${ENVS}.`
 		);
 	}
+
+	const useAuth0 = process.env.AUTH0_ENABLED === 'true';
 
 	const db = await connect(process.env.DB_LOCATION);
 
@@ -40,7 +53,7 @@ export const startApp = async (options = { port: 8080 }) => {
 
 	// In dev mode, we run migrations upon startup.
 	// In production, migrations are run by the deployment script.
-	if (isDevMode) {
+	if (isDevMode || isTestMode) {
 		const migrator = new Migrator(db);
 		migrator.migrate();
 	}
@@ -78,7 +91,7 @@ export const startApp = async (options = { port: 8080 }) => {
 	const insecure =
 		'0000000000000000000000000000000000000000000000000000000000000000';
 	const sessionSecret = process.env.COOKIE_SECRET ?? insecure;
-	if (!isDevMode && sessionSecret === insecure) {
+	if (isProductionMode && sessionSecret === insecure) {
 		throw new Error('Cannot use insecure session secret in production');
 	}
 
@@ -92,25 +105,26 @@ export const startApp = async (options = { port: 8080 }) => {
 		}
 	});
 
+	// optional auth0 protection
+	if (useAuth0) {
+		logger.info(
+			`Using Auth0 with AUTH0_DOMAIN: ${process.env.AUTH0_DOMAIN} and APP_BASE_URL: ${process.env.AUTH0_APP_BASE_URL}`
+		);
+		fastify.register(auth0, {
+			domain: process.env.AUTH0_DOMAIN,
+			clientId: process.env.AUTH0_CLIENT_ID,
+			clientSecret: process.env.AUTH0_CLIENT_SECRET,
+			appBaseUrl: process.env.AUTH0_APP_BASE_URL,
+			sessionSecret: sessionSecret
+		});
+	}
+
 	// request logging
 	fastify.addHook('onResponse', async (request, reply) => {
 		logger.info(
 			`${request.method} ${request.url} ${reply.statusCode} - ${Math.round(reply.elapsedTime)}ms`
 		);
 	});
-
-	// Current time (so that tests can manipulate time)
-	// todo: remove?
-	// app.decorateRequest('now', function () {
-	// 	if (!isDevMode) {
-	// 		return Date.now();
-	// 	}
-	// 	return (
-	// 		+this.headers['x-mock-time'] ||
-	// 		+this.query['x-mock-time'] ||
-	// 		Date.now()
-	// 	);
-	// });
 
 	// CSRF protection
 	fastify.addHook('preHandler', async (request, reply) => {
@@ -127,6 +141,7 @@ export const startApp = async (options = { port: 8080 }) => {
 		}
 	});
 
+	// alerts when client version is behind latest app version
 	fastify.addHook('preHandler', async (request, reply) => {
 		const clientVersion = request.headers['x-app-version'];
 		if (clientVersion && clientVersion < appVersion) {
@@ -137,12 +152,33 @@ export const startApp = async (options = { port: 8080 }) => {
 		}
 	});
 
+	// if auth0 enabled protect every route by default
+	fastify.addHook('onRequest', async (request, reply) => {
+		if (!useAuth0) {
+			return;
+		}
+		// skip the hook for public routes
+		if (request.url.startsWith('/auth/')) {
+			return;
+		}
+		const session = await fastify.auth0Client.getSession({
+			request,
+			reply
+		});
+
+		if (!session) {
+			reply.redirect('/auth/login');
+		}
+	});
+
+	// hashes links
 	fastify.addHook('onSend', async (_request, _reply, payload) => {
 		return typeof payload !== 'string'
 			? payload
 			: hasher.hashLinks(payload);
 	});
 
+	// enables partial rendering of htmlx
 	fastify.decorateReply(
 		'render',
 		function (partial, params, mime = 'text/html') {

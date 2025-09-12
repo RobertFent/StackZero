@@ -217,6 +217,7 @@ export const Root = () => {
 				</div>
 				<hr style="margin-top: 2rem;" />
 			</section>
+			<a href="/auth/logout">Log out</a>
 		</div>
 	`;
 };
