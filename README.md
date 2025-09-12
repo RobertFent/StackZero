@@ -16,7 +16,9 @@ Built with simplicity and efficiency in mind, StackZero avoids heavy dependencie
 - 🚀 **Simple Deployment** — One `docker-compose.yml` and you're live.
 - 💸 **5€ SaaS-Ready** — Designed to run on a 4€ Hetzner VPS + 1€ domain.
 
-## 🐳 Getting Started (Docker)
+## Getting Started
+
+### Using the proper template way
 
 To get StackZero running locally or in production use [StackZero-Template](https://github.com/RobertFent/StackZero-template):
 
@@ -42,6 +44,20 @@ docker compose up -d
 ```
 
 For a more detailed tutorial, check the documentation of the [StackZero-Template](https://github.com/RobertFent/StackZero-template) repository.
+
+### Developing in this repository directly
+
+Setup proper .env file and fill out afterwards:
+
+```
+cp .env-template .env
+```
+
+Start the application locally with:
+
+```bash
+npm run start-local
+```
 
 ## 🔧 Design Principles
 
