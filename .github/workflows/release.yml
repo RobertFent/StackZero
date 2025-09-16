@@ -151,3 +151,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           title: Release ${{ steps.meta.outputs.tag }}
+          tag: ${{ steps.meta.outputs.tag }}
