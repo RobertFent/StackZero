@@ -1,4 +1,14 @@
-[![Publish Docker image to GHCR](https://github.com/RobertFent/StackZero/actions/workflows/release.yml/badge.svg)](https://github.com/RobertFent/StackZero/actions/workflows/release.yml)
+[![NodeJS](https://img.shields.io/badge/Node.js-6DA55F?logo=node.js&logoColor=white)](#)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000)](#)
+[![Fastify](https://img.shields.io/badge/-Fastify-000000?style=flat&logo=fastify&logoColor=white)](#)
+[![HTMX](https://img.shields.io/badge/HTMX-36C?logo=htmx&logoColor=fff)](#)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff)](#)
+[![SQLite](https://img.shields.io/badge/SQLite-%2307405e.svg?logo=sqlite&logoColor=white)](#)
+
+![Build](https://img.shields.io/github/actions/workflow/status/RobertFent/StackZero/release.yml?branch=master)
+![Tests](https://img.shields.io/github/actions/workflow/status/RobertFent/StackZero/test.yml?label=tests)
+![Coverage](https://img.shields.io/codecov/c/github/RobertFent/StackZero?branch=master)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/RobertFent/StackZero)
 
 ![StackZero Frozen Icon](static/stackzero.png)
 

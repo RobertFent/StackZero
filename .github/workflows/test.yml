@@ -25,4 +25,12 @@ jobs:
         run: npx playwright install
 
       - name: Run tests
-        run: npm test
+        run: npm run test
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./lcov.info
+          flags: unittests
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
