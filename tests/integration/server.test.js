@@ -9,7 +9,7 @@ describe('server - single fork', () => {
 		child = spawn('node', ['core/server.js'], {
 			env: {
 				...process.env,
-				NODE_ENV: 'development',
+				NODE_ENV: 'testing',
 				DB_LOCATION: ':memory:',
 				FORKS: '1',
 				PORT: '3050'
@@ -43,7 +43,7 @@ describe('server - single fork', () => {
 		const child = spawn('node', ['core/server.js'], {
 			env: {
 				...process.env,
-				NODE_ENV: 'development',
+				NODE_ENV: 'testing',
 				DB_LOCATION: ':memory:',
 				FORKS: '1',
 				TEST_CRASH: 'true'
@@ -71,8 +71,8 @@ describe('server - multi fork', () => {
 		child = spawn('node', ['core/server.js'], {
 			env: {
 				...process.env,
-				NODE_ENV: 'development',
-				DB_LOCATION: './data/test-multi.db',
+				NODE_ENV: 'testing',
+				DB_LOCATION: ':memory:',
 				FORKS: '2',
 				PORT: '3051'
 			},
